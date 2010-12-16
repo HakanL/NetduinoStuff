@@ -30,17 +30,6 @@ namespace LedMatrix
     {
         public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(4, Pins.GPIO_PIN_D13, Pins.GPIO_PIN_D11, true);
         public static DisplayToolbox toolbox = new DisplayToolbox(disp);
-        public static SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration spiConfig = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
-            Pins.GPIO_NONE,
-            false,
-            0,
-            0,
-            false,
-            true,
-            1000,
-            SPI_Devices.SPI1,
-            14);
-        public static Microsoft.SPOT.Hardware.SPI spi;
 
 
         // Prepare boundaries
