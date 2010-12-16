@@ -79,6 +79,9 @@ namespace NetDuino.Hardware.HT1632
 
             // allocate a buffer for pin assignments
             _displayPins = new OutputPort[numDisplays];
+
+            // Prepare
+            PreCommand();
         }
 
         // Initalise a display
