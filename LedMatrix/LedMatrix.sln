@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LedMatrix", "LedMatrix\LedMatrix.csproj", "{3FE46F00-987D-4CEA-A754-3A82E28A4725}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDuino.Hardware.HT1632", "NetDuino.Hardware.HT1632\NetDuino.Hardware.HT1632.csproj", "{2DA637AE-70F3-4A23-872B-4FD6F1D06330}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE46F00-987D-4CEA-A754-3A82E28A4725}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2DA637AE-70F3-4A23-872B-4FD6F1D06330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA637AE-70F3-4A23-872B-4FD6F1D06330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA637AE-70F3-4A23-872B-4FD6F1D06330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA637AE-70F3-4A23-872B-4FD6F1D06330}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
