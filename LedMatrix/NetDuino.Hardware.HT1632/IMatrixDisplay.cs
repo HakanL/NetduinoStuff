@@ -28,8 +28,8 @@ namespace NetDuino.Hardware.HT1632
     {
         byte DisplayCount { get; }
 
-        int DisplayWidth { get; }
-        int DisplayHeight { get; }
+        byte DisplayWidth { get; }
+        byte DisplayHeight { get; }
         /*
         public void InitDisplay(byte displayNum,
                                  Cpu.Pin pin,
@@ -62,7 +62,7 @@ namespace NetDuino.Hardware.HT1632
         // Sync display using progressive write (Can be buggy, very fast)
         public void SyncDisplays()
         {
-            for (int dispNum = 0; dispNum < DisplayCount; ++dispNum)
+            for (byte dispNum = 0; dispNum < DisplayCount; ++dispNum)
             {
                 int bufferOffset = _backBufferSize * dispNum;
 
@@ -134,7 +134,7 @@ namespace NetDuino.Hardware.HT1632
                               byte y,
                               bool useShadow);
 
-        void SetBrightness(int displayNum,
+        void SetBrightness(byte displayNum,
                                    int pwmValue);
 
 /*

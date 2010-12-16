@@ -28,18 +28,18 @@ namespace LedMatrix
 
     public class Program
     {
-        public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(4, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, true);
+        public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(1, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, true);
         public static DisplayToolbox toolbox = new DisplayToolbox(disp);
         public static SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration spiConfig = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
-            Pins.GPIO_NONE,
+            Pins.GPIO_PIN_D0,
             false,
             0,
             0,
-            false,
+            true,
             true,
             1000,
             SPI_Devices.SPI1,
-            14);
+            15);
         public static Microsoft.SPOT.Hardware.SPI spi;
 
 
@@ -58,11 +58,10 @@ namespace LedMatrix
             Y_MAX = disp.DisplayHeight - 1;
 
             // Prepare displays
-            disp.InitDisplay(0, Pins.GPIO_PIN_D0, true);
-            disp.InitDisplay(1, Pins.GPIO_PIN_D1, false);
+            disp.InitDisplay(0, Pins.GPIO_PIN_D7, true);
+/*            disp.InitDisplay(1, Pins.GPIO_PIN_D1, false);
             disp.InitDisplay(2, Pins.GPIO_PIN_D2, false);
-            disp.InitDisplay(3, Pins.GPIO_PIN_D3, false);
-
+            disp.InitDisplay(3, Pins.GPIO_PIN_D3, false);*/
         }
 
         private static readonly Random _rand = new Random();
@@ -275,16 +274,18 @@ namespace LedMatrix
         {
             Setup();
 
+            disp.SetPixel(0, 0, 0, 1, true);
+
             while (true)
             {
-                Demo_Text();
+ /*               Demo_Text();
                 Thread.Sleep(1000);
                 Demo_BouncyCircle();
                 Thread.Sleep(1000);
                 Demo_Bouncyline();
                 Thread.Sleep(1000);
                 Demo_Life();
-                Thread.Sleep(1000);
+                Thread.Sleep(1000);*/
             }
         }
     }

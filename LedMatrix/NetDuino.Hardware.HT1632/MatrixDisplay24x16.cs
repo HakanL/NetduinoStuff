@@ -40,7 +40,7 @@ namespace NetDuino.Hardware.HT1632
 
         public byte DisplayCount { get; private set; }
 
-        public int DisplayWidth
+        public byte DisplayWidth
         {
             get
             {
@@ -48,7 +48,7 @@ namespace NetDuino.Hardware.HT1632
             }
         }
 
-        public int DisplayHeight
+        public byte DisplayHeight
         {
             get
             {
@@ -102,6 +102,13 @@ namespace NetDuino.Hardware.HT1632
             _displayPins[displayNum] = new OutputPort(pin, true);
 
 
+            WriteCommand(displayNum, HT1632_CMD.SYSDIS);
+            WriteCommand(displayNum, HT1632_CMD.SYSON);
+            WriteCommand(displayNum, HT1632_CMD.COMS11);
+            WriteCommand(displayNum, HT1632_CMD.LEDON);
+            WriteCommand(displayNum, HT1632_CMD.BLOFF);
+            WriteCommand(displayNum, HT1632_CMD.PWM + 15);
+/*
             SelectDisplay(displayNum);
             // Send Precommand
             PreCommand();
@@ -114,12 +121,8 @@ namespace NetDuino.Hardware.HT1632
             WriteDataBE(8, (byte)HT1632_CMD.BLOFF, true);
             WriteDataBE(8, (byte)HT1632_CMD.PWM + 15, true);
 
-            ushort[] tst = new ushort[] { 0x280F };
-            _spi.Write(tst);
-
-
-            ReleaseDisplay(displayNum);
-            Clear(displayNum, true);
+            ReleaseDisplay(displayNum);*/
+//            Clear(displayNum, true);
         }
 
 
@@ -175,7 +178,7 @@ namespace NetDuino.Hardware.HT1632
             // Select all displays and clear
             if (paint && !useShadow)
             {
-                for (int i = 0; i < DisplayCount; ++i) SelectDisplay(i); // Enable all displays
+                for (byte i = 0; i < DisplayCount; ++i) SelectDisplay(i); // Enable all displays
 
                 // Use progressive write mode, faster
                 WriteDataBE(3, (byte)HT1632_ID.WR); // Send "write to display" command
@@ -186,7 +189,7 @@ namespace NetDuino.Hardware.HT1632
                     WriteDataLE(8, 0x00); // Write nada
                 }
 
-                for (int i = 0; i < DisplayCount; ++i) ReleaseDisplay(i); // Disable all displays
+                for (byte i = 0; i < DisplayCount; ++i) ReleaseDisplay(i); // Disable all displays
             }
         }
 
@@ -280,20 +283,20 @@ namespace NetDuino.Hardware.HT1632
         }
 
 
-        public void SetBrightness(int displayNum,
+        public void SetBrightness(byte displayNum,
                                    int pwmValue)
         {
             if (displayNum >= DisplayCount)
                 throw new ArgumentOutOfRangeException("displayNum");
 
             // Check boundaries
-            if (pwmValue > 15) pwmValue = 15;
-            else if (pwmValue < 0) pwmValue = 0;
+            if (pwmValue > 15)
+                pwmValue = 15;
+            else
+                if (pwmValue < 0)
+                    pwmValue = 0;
 
-            SelectDisplay(displayNum);
-            PreCommand();
-            WriteDataBE(8, (byte)(HT1632_CMD.PWM + pwmValue), true);
-            ReleaseDisplay(displayNum);
+            WriteCommand(displayNum, HT1632_CMD.PWM + pwmValue);
         }
 
         // Converts a cartesian coordinate to a display index
@@ -324,13 +327,13 @@ namespace NetDuino.Hardware.HT1632
         }
 
         // Enables/disables a specific display in the series
-        private void SelectDisplay(int displayNum)
+        private void SelectDisplay(byte displayNum)
         {
             //Debug.Print("Selecting Display: " + displayNum);
             _displayPins[displayNum].Write(false);
         }
 
-        private void ReleaseDisplay(int displayNum)
+        private void ReleaseDisplay(byte displayNum)
         {
             //Debug.Print("Releasing Display: " + displayNum);
             _displayPins[displayNum].Write(true);
@@ -374,60 +377,44 @@ namespace NetDuino.Hardware.HT1632
         }
 
         // Write command to write
-        private void writeCommand(byte displayNum,
-                                   byte command)
+        private void WriteCommand(byte displayNum, HT1632_CMD command)
         {
-            SelectDisplay(displayNum);
+/*            SelectDisplay(displayNum);
             _dataPin.Write(true);
             WriteDataBE(3, (byte)HT1632_ID.CMD); // Write out MSB [3 bits]
-            WriteDataBE(8, command); // Then MSB [7 8 bits]
+            WriteDataBE(8, (byte)command); // Then MSB [7 8 bits]
             WriteDataBE(1, 0); // 1 bit extra 
             _dataPin.Write(false);
-            ReleaseDisplay(displayNum);
+            ReleaseDisplay(displayNum);*/
+
+            ushort value = (ushort)HT1632_ID.CMD << 12;
+            value += (byte)command;
+
+            _spi.Write(new ushort[] { value });
         }
-
-        private void PreCommand() // Sends 100 down the line
-        {
-            _clkPin.Write(false);
-            _dataPin.Write(true);
-            // _nop();
-
-            _clkPin.Write(true);
-            // _nop();
-            // _nop();
-
-            _clkPin.Write(false);
-            _dataPin.Write(false);
-            // _nop();
-
-            _clkPin.Write(true);
-            // _nop();
-            // _nop();
-
-            _clkPin.Write(false);
-            _dataPin.Write(false);
-            // _nop();
-
-            _clkPin.Write(true);
-            // _nop();
-            // _nop();
-        }
-
 
         // Write a single nybble to the display (the display writes 4 bits at a time min)
-        private void WriteNibble(int displayNum,
+        private void WriteNibble(byte displayNum,
                                   byte addr,
                                   byte data)
         {
-            SelectDisplay(displayNum); // Select chip
+/*            SelectDisplay(displayNum); // Select chip
             WriteDataBE(3, (byte)HT1632_ID.WR); // send ID: WRITE to RAM
             WriteDataBE(7, addr); // Send address
             WriteDataLE(4, data); // send 4 bits of data
-            ReleaseDisplay(displayNum); // done
-        }
+            ReleaseDisplay(displayNum); // done*/
 
+            addr = 0x00;
+            data = 0x0f;
+
+            ushort value = (ushort)HT1632_ID.WR << 12;
+            value += (ushort)(addr << 5);
+            value += (ushort)(data << 1);
+            _spi.Write(new ushort[] { value });
+        }
+/*
         // Write a single nybble to the display (the display writes 4 bits at a time min)
-        private void WriteNibbles(int displayNum,
+        private void WriteNibbles(byte displayNum,
                                    byte addr,
                                    byte[] data,
                                    byte nybbleCount)
@@ -438,7 +425,7 @@ namespace NetDuino.Hardware.HT1632
             for (int i = 0; i < nybbleCount; ++i) WriteDataLE(4, data[i]); // send multiples of 4 bits of data
             ReleaseDisplay(displayNum); // done
         }
-
+        */
         // Shadow 
         public void CopyBuffer()
         {

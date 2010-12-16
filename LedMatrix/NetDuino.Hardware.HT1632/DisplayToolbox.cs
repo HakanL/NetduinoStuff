@@ -171,7 +171,7 @@ namespace NetDuino.Hardware.HT1632
 
         public void SetBrightness(byte pwmValue)
         {
-            for (int displayNum = 0; displayNum < _display.DisplayCount; ++displayNum)
+            for (byte displayNum = 0; displayNum < _display.DisplayCount; ++displayNum)
                 _display.SetBrightness(displayNum, pwmValue);
         }
 

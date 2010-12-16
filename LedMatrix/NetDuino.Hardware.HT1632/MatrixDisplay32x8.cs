@@ -38,7 +38,7 @@ namespace NetDuino.Hardware.HT1632
 
     public byte DisplayCount { get; private set; }
 
-    public int DisplayWidth
+    public byte DisplayWidth
     {
       get
       {
@@ -46,7 +46,7 @@ namespace NetDuino.Hardware.HT1632
       }
     }
 
-    public int DisplayHeight
+    public byte DisplayHeight
     {
       get
       {
@@ -113,7 +113,7 @@ namespace NetDuino.Hardware.HT1632
     // Sync display using progressive write (Can be buggy, very fast)
     public void SyncDisplays()
     {
-      for( int dispNum = 0; dispNum < DisplayCount; ++dispNum )
+      for( byte dispNum = 0; dispNum < DisplayCount; ++dispNum )
       {
         int bufferOffset = _backBufferSize * dispNum;
 
@@ -158,7 +158,7 @@ namespace NetDuino.Hardware.HT1632
       // Select all displays and clear
       if( paint && !useShadow )
       {
-        for( int i = 0; i < DisplayCount; ++i ) SelectDisplay( i ); // Enable all displays
+        for( byte i = 0; i < DisplayCount; ++i ) SelectDisplay( i ); // Enable all displays
 
         // Use progressive write mode, faster
         WriteDataBE( 3, (byte) HT1632_ID.WR ); // Send "write to display" command
@@ -169,7 +169,7 @@ namespace NetDuino.Hardware.HT1632
           WriteDataLE( 0, 0x00 ); // Write nada
         }
 
-        for( int i = 0; i < DisplayCount; ++i ) ReleaseDisplay( i ); // Disable all displays
+        for( byte i = 0; i < DisplayCount; ++i ) ReleaseDisplay( i ); // Disable all displays
       }
     }
 
@@ -266,7 +266,7 @@ namespace NetDuino.Hardware.HT1632
     }
 
 
-    public void SetBrightness( int displayNum,
+    public void SetBrightness( byte displayNum,
                                int pwmValue )
     {
       if( displayNum >= DisplayCount )
@@ -305,13 +305,13 @@ namespace NetDuino.Hardware.HT1632
     }
 
     // Enables/disables a specific display in the series
-    private void SelectDisplay( int displayNum )
+    private void SelectDisplay( byte displayNum )
     {
       //Debug.Print("Selecting Display: " + displayNum);
       _displayPins[ displayNum ].Write( false );
     }
 
-    private void ReleaseDisplay( int displayNum )
+    private void ReleaseDisplay( byte displayNum )
     {
       //Debug.Print("Releasing Display: " + displayNum);
       _displayPins[ displayNum ].Write( true );
@@ -396,7 +396,7 @@ namespace NetDuino.Hardware.HT1632
 
 
     // Write a single nybble to the display (the display writes 4 bits at a time min)
-    private void WriteNibble( int displayNum,
+    private void WriteNibble( byte displayNum,
                               byte addr,
                               byte data )
     {
@@ -408,7 +408,7 @@ namespace NetDuino.Hardware.HT1632
     }
 
     // Write a single nybble to the display (the display writes 4 bits at a time min)
-    private void WriteNibbles( int displayNum,
+    private void WriteNibbles( byte displayNum,
                                byte addr,
                                byte[] data,
                                byte nybbleCount )
