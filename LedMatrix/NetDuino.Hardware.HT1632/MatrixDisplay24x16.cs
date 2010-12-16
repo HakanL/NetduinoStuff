@@ -114,10 +114,6 @@ namespace NetDuino.Hardware.HT1632
             WriteDataBE(8, (byte)HT1632_CMD.BLOFF, true);
             WriteDataBE(8, (byte)HT1632_CMD.PWM + 15, true);
 
-            ushort[] tst = new ushort[] { 0x280F };
-            _spi.Write(tst);
-
-
             ReleaseDisplay(displayNum);
             Clear(displayNum, true);
         }
