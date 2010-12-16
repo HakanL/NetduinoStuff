@@ -32,6 +32,8 @@ namespace NetDuino.Hardware.HT1632
         private readonly OutputPort _clkPin;
         private readonly OutputPort _dataPin;
 
+        private Microsoft.SPOT.Hardware.SPI _spi;
+
         private readonly byte[] _displayBuffers; // Will store the pixel data for each display
         private readonly OutputPort[] _displayPins; // Will contain the pins for each CS
         private readonly byte[] _shadowBuffers; // Will store the pixel data for each display
@@ -52,6 +54,12 @@ namespace NetDuino.Hardware.HT1632
             {
                 return (16);
             }
+        }
+
+        public Microsoft.SPOT.Hardware.SPI SPI
+        {
+            get { return _spi; }
+            set { _spi = value; }
         }
 
         public MatrixDisplay24x16(byte numDisplays,
@@ -105,6 +113,11 @@ namespace NetDuino.Hardware.HT1632
             WriteDataBE(8, (byte)HT1632_CMD.LEDON, true);
             WriteDataBE(8, (byte)HT1632_CMD.BLOFF, true);
             WriteDataBE(8, (byte)HT1632_CMD.PWM + 15, true);
+
+            ushort[] tst = new ushort[] { 0x280F };
+            _spi.Write(tst);
+
+
             ReleaseDisplay(displayNum);
             Clear(displayNum, true);
         }

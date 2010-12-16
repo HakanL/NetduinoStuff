@@ -28,8 +28,20 @@ namespace LedMatrix
 
     public class Program
     {
-        public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(4, Pins.GPIO_PIN_D13, Pins.GPIO_PIN_D12, true);
+        public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(4, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, true);
         public static DisplayToolbox toolbox = new DisplayToolbox(disp);
+        public static SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration spiConfig = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
+            Pins.GPIO_NONE,
+            false,
+            0,
+            0,
+            false,
+            true,
+            1000,
+            SPI_Devices.SPI1,
+            14);
+        public static Microsoft.SPOT.Hardware.SPI spi;
+
 
         // Prepare boundaries
         private static int X_MAX = 0;
@@ -37,6 +49,10 @@ namespace LedMatrix
 
         private static void Setup()
         {
+            spi = new Microsoft.SPOT.Hardware.SPI(spiConfig);
+
+            disp.SPI = spi;
+
             // Fetch bounds (dynamically work out how large this display is)
             X_MAX = disp.DisplayCount * disp.DisplayWidth - 1;
             Y_MAX = disp.DisplayHeight - 1;
@@ -46,6 +62,7 @@ namespace LedMatrix
             disp.InitDisplay(1, Pins.GPIO_PIN_D1, false);
             disp.InitDisplay(2, Pins.GPIO_PIN_D2, false);
             disp.InitDisplay(3, Pins.GPIO_PIN_D3, false);
+
         }
 
         private static readonly Random _rand = new Random();
