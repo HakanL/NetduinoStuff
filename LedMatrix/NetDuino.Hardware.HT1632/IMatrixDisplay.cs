@@ -28,7 +28,10 @@ namespace NetDuino.Hardware.HT1632
         void SyncDisplay();
         void Clear(bool paint = false);
         void SetPixel(byte x, byte y, byte value, bool paint = false);
+        void Set8Pixels(byte x, byte y, byte value);
         byte GetPixel(byte x, byte y);
         void SetBrightness(int pwmValue);
+        byte ScrollLeft(byte newData);
+        ushort ScrollLeft2(ushort newData);
     }
 }

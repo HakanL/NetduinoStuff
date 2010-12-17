@@ -72,15 +72,17 @@ namespace NetDuino.Hardware.HT1632
             displays[displayNum].SetPixel(x, y, value, paint);
         }
 
+        public void Set8Pixels(byte x, byte y, byte value)
+        {
+            byte displayNum = CalcDisplayNum(ref x);
+
+            displays[displayNum].Set8Pixels(x, y, value);
+        }
+
         public void SyncDisplays()
         {
             for (byte dispNum = 0; dispNum < displays.Length; dispNum++)
-                SyncDisplay(dispNum);
-        }
-
-        public void SyncDisplay(byte displayNum)
-        {
-            displays[displayNum].SyncDisplay();
+                displays[dispNum].SyncDisplay();
         }
 
         public void SetBrightness(byte pwmValue)
@@ -106,6 +108,31 @@ namespace NetDuino.Hardware.HT1632
             return (byte)displayNum;
         }
 
+
+        public void ScrollLeft()
+        {
+            byte newData = 0;
+
+            byte data;
+            for (int dispNum = displays.Length - 1; dispNum >= 0; dispNum--)
+            {
+                data = displays[dispNum].ScrollLeft(newData);
+                newData = data;
+            }
+        }
+
+
+        public void ScrollLeft2()
+        {
+            ushort newData = 0;
+
+            ushort data;
+            for (int dispNum = displays.Length - 1; dispNum >= 0; dispNum--)
+            {
+                data = displays[dispNum].ScrollLeft2(newData);
+                newData = data;
+            }
+        }
 
     }
 }

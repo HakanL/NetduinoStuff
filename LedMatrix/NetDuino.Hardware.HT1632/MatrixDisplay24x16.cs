@@ -164,7 +164,15 @@ namespace NetDuino.Hardware.HT1632
                 SyncDisplay();
         }
 
-        
+
+        public void Set8Pixels(byte x, byte y, byte value)
+        {
+            int bitIndex = y + (((x & 0xf8) + (7 - (x & 7))) << 4);
+
+            SetDataInBuffer(bitIndex, value);
+        }
+
+
         public byte GetPixel(byte x, byte y)
         {
             int bitIndex = y + (((x & 0xf8) + (7 - (x & 7))) << 4);
@@ -194,5 +202,109 @@ namespace NetDuino.Hardware.HT1632
         }
 
 
+        private byte GetDataFromBuffer(int bitIndex)
+        {
+            if (bitIndex >= 380)
+                //TODO
+                return 0;
+
+            bitIndex += 10;
+
+            int bufferAddr = bitIndex / 15;
+            int bitPos = bitIndex % 15;
+            int mask = (int)(0x7f800000 >> bitPos);
+
+            int existing = _mainBuffer[bufferAddr] << 16;
+            if (bitPos > 8 && bufferAddr < 25)
+                existing += _mainBuffer[bufferAddr + 1] << 1;
+
+            return (byte)((existing & mask) >> (23 - bitPos));
+        }
+
+        private void SetDataInBuffer(int bitIndex, byte data)
+        {
+            if(bitIndex >= 380)
+                //TODO
+                return;
+
+            bitIndex += 10;
+
+            int bufferAddr = bitIndex / 15;
+            int bitPos = bitIndex % 15;
+            int newData = (data << (23 - bitPos));
+            int mask = (int)(0x7f800000 >> bitPos);
+
+            int existing = _mainBuffer[bufferAddr] << 16;
+            if (bitPos > 8 && bufferAddr < 25)
+                existing += _mainBuffer[bufferAddr + 1] << 1;
+
+            existing &= ~mask;
+            existing |= newData;
+
+            _mainBuffer[bufferAddr] = (ushort)(existing >> 16);
+            if (bitPos > 8 && bufferAddr < 25)
+                _mainBuffer[bufferAddr + 1] = (ushort)((existing & 0xffff) >> 1);
+        }
+
+
+        public byte ScrollLeft(byte newData)
+        {
+            byte outData = 0;
+            byte y = 0;
+
+            int bitIndex = GetBitIndex(0, y);
+
+            outData = GetDataFromBuffer(bitIndex);
+
+            for (byte x = 1; x < 24; x++)
+            {
+                int newIndex = GetBitIndex(x, y);
+
+                byte data = GetDataFromBuffer(newIndex);
+                
+                SetDataInBuffer(bitIndex, data);
+
+                bitIndex = newIndex;
+            }
+
+            SetDataInBuffer(bitIndex, newData);
+
+            return outData;
+        }
+
+
+        public ushort ScrollLeft2(ushort newData)
+        {
+            ushort outData = 0;
+            byte y = 0;
+
+            int bitIndex1 = GetBitIndex(0, y);
+            int bitIndex2 = GetBitIndex(1, y);
+
+            outData = (ushort)(GetDataFromBuffer(bitIndex1) << 8);
+            outData += GetDataFromBuffer(bitIndex2);
+
+            for (byte x = 2; x < 23; x += 2)
+            {
+                int newIndex1 = GetBitIndex(x, y);
+                int newIndex2 = GetBitIndex((byte)(x + 1), y);
+
+                byte data1 = GetDataFromBuffer(newIndex1);
+                byte data2 = GetDataFromBuffer(newIndex2);
+
+                SetDataInBuffer(bitIndex1, data1);
+                SetDataInBuffer(bitIndex2, data2);
+
+                bitIndex1 = newIndex1;
+                bitIndex2 = newIndex2;
+            }
+
+            SetDataInBuffer(bitIndex1, (byte)(newData >> 8));
+            SetDataInBuffer(bitIndex2, (byte)newData);
+
+            return outData;
+        }
+
+    
     }
 }

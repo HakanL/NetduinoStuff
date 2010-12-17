@@ -267,10 +267,41 @@ namespace LedMatrix
         }
 
 
+        private static void Demo_Scroll()
+        {
+            toolbox.DrawString(0, 8, "Lite finare!!", true);
+            disp.SyncDisplays();
+
+            while (true)
+            {
+                toolbox.DrawString(48, 0, "Sunes jul");
+
+                for (int index = 0; index < 20; index++)
+                {
+                    disp.ScrollLeft2();
+                    disp.SyncDisplays();
+                }
+            }
+        }
+
+
         public static void Main()
         {
             Setup();
 
+            int topX = 90;
+            while (true)
+            {
+                toolbox.DrawString(topX, 0, "Sunes Jul", true);
+                topX--;
+                
+                disp.SyncDisplays();
+
+                if (topX < -60)
+                    topX = 90;
+
+            }
+/*
             while (true)
             {
                 Demo_Text();
@@ -280,11 +311,11 @@ namespace LedMatrix
                 Thread.Sleep(1000);
 
                 Demo_Bouncyline();
-                Thread.Sleep(1000);
+                Thread.Sleep(1000);*/
 /*
                 Demo_Fill();
                 Thread.Sleep(1000);*/
-            }
+//            }
         }
     }
 }

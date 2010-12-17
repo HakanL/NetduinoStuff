@@ -142,10 +142,7 @@ namespace NetDuino.Hardware.HT1632
             }
         }
 
-        public void SetPixel(int x,
-                              int y,
-                              int val,
-                              bool paint = false)
+        public void SetPixel(int x, int y, int val, bool paint = false)
         {
             // setPixel
             // _display Number
@@ -157,6 +154,20 @@ namespace NetDuino.Hardware.HT1632
                 return;
 
             _display.SetPixel((byte)x, (byte)y, (byte)val, paint);
+        }
+
+        public void Set8Pixels(int x, int y, byte val)
+        {
+            // setPixel
+            // _display Number
+            // X Cordinate
+            // Y Cordinate
+            // Value (either on or off, 1, 0)
+            // Do you want to write this change straight to the _display? (yes: slower)
+            if (x < 0 || y < 0 || x >= _display.TotalWidth || y > _display.DisplayHeight - 8)
+                return;
+
+            _display.Set8Pixels((byte)x, (byte)y, val);
         }
 
         public void DrawRectangle(int x,
@@ -385,9 +396,7 @@ namespace NetDuino.Hardware.HT1632
          * This is unoptimized and simply uses setPixel() to draw each dot.
          */
 
-        private void DrawChar(int x,
-                               int y,
-                               char c)
+        private void DrawChar(int x, int y, char c, bool drawEmptyPixels)
         {
             int index = 0;
 
@@ -411,23 +420,31 @@ namespace NetDuino.Hardware.HT1632
             for (byte col = 0; col < 5; col++)
             {
                 byte dots = _myfont[index][col];
-                for (byte row = 0; row < 7; row++)
+
+                if (drawEmptyPixels)
                 {
-                    if((dots & (64 >> row)) != 0)
-                        SetPixel(x + col, y + row, 1);
+                    Set8Pixels(x + col, y, (byte)(dots << 1));
+                }
+                else
+                {
+                    for (byte row = 0; row < 7; row++)
+                    {
+                        if ((dots & (64 >> row)) != 0)
+                            SetPixel(x + col, y + row, 1);
+                    }
                 }
             }
+            if(drawEmptyPixels)
+                Set8Pixels(x + 5, y, 0);
         }
 
 
         // Write out an entire string (Null terminated)
-        public void DrawString(int x,
-                                int y,
-                                string s)
+        public void DrawString(int x, int y, string s, bool drawEmptyPixels = false)
         {
             for (int i = 0; i < s.Length; i++)
             {
-                DrawChar(x, y, s[i]);
+                DrawChar(x, y, s[i], drawEmptyPixels);
                 x += CHAR_WIDTH; // Width of each character
             }
         }
