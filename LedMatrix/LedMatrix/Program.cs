@@ -48,7 +48,7 @@ namespace LedMatrix
                 false,
                 0,
                 0,
-                true,
+                false,
                 true,
                 1000,
                 SPI_Devices.SPI1,
@@ -62,7 +62,7 @@ namespace LedMatrix
                 false,
                 0,
                 0,
-                true,
+                false,
                 true,
                 1000,
                 SPI_Devices.SPI1,
@@ -76,7 +76,7 @@ namespace LedMatrix
                 false,
                 0,
                 0,
-                true,
+                false,
                 true,
                 1000,
                 SPI_Devices.SPI1,
@@ -90,7 +90,7 @@ namespace LedMatrix
                 false,
                 0,
                 0,
-                true,
+                false,
                 true,
                 1000,
                 SPI_Devices.SPI1,
@@ -205,7 +205,7 @@ namespace LedMatrix
                 toolbox.DrawCircle(x, y, radius);
                 disp.SyncDisplays();
 
-                Thread.Sleep(10);
+                Thread.Sleep(5);
                 disp.Clear();
             }
         }
