@@ -28,20 +28,8 @@ namespace LedMatrix
 
     public class Program
     {
-        public static MatrixDisplay24x16 disp = new MatrixDisplay24x16(1, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, true);
+        public static MultiDisplay disp = new MultiDisplay(4, 24, 16);
         public static DisplayToolbox toolbox = new DisplayToolbox(disp);
-        public static SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration spiConfig = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
-            Pins.GPIO_PIN_D0,
-            false,
-            0,
-            0,
-            true,
-            true,
-            1000,
-            SPI_Devices.SPI1,
-            15);
-        public static Microsoft.SPOT.Hardware.SPI spi;
-
 
         // Prepare boundaries
         private static int X_MAX = 0;
@@ -49,19 +37,66 @@ namespace LedMatrix
 
         private static void Setup()
         {
-            spi = new Microsoft.SPOT.Hardware.SPI(spiConfig);
-
-            disp.SPI = spi;
-
             // Fetch bounds (dynamically work out how large this display is)
-            X_MAX = disp.DisplayCount * disp.DisplayWidth - 1;
+            X_MAX = disp.TotalWidth - 1;
             Y_MAX = disp.DisplayHeight - 1;
 
-            // Prepare displays
-            disp.InitDisplay(0, Pins.GPIO_PIN_D7, true);
-/*            disp.InitDisplay(1, Pins.GPIO_PIN_D1, false);
-            disp.InitDisplay(2, Pins.GPIO_PIN_D2, false);
-            disp.InitDisplay(3, Pins.GPIO_PIN_D3, false);*/
+            SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration spiConfigDisplay;
+
+            spiConfigDisplay = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
+                Pins.GPIO_PIN_D0,
+                false,
+                0,
+                0,
+                true,
+                true,
+                1000,
+                SPI_Devices.SPI1,
+                15);
+
+            disp.InitDisplay(0, new MatrixDisplay24x16(spiConfigDisplay));
+
+
+            spiConfigDisplay = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
+                Pins.GPIO_PIN_D1,
+                false,
+                0,
+                0,
+                true,
+                true,
+                1000,
+                SPI_Devices.SPI1,
+                15);
+
+            disp.InitDisplay(1, new MatrixDisplay24x16(spiConfigDisplay));
+
+
+            spiConfigDisplay = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
+                Pins.GPIO_PIN_D2,
+                false,
+                0,
+                0,
+                true,
+                true,
+                1000,
+                SPI_Devices.SPI1,
+                15);
+
+            disp.InitDisplay(2, new MatrixDisplay24x16(spiConfigDisplay));
+
+
+            spiConfigDisplay = new SecretLabs.NETMF.Hardware.ExtendedSpiConfiguration(
+                Pins.GPIO_PIN_D3,
+                false,
+                0,
+                0,
+                true,
+                true,
+                1000,
+                SPI_Devices.SPI1,
+                15);
+
+            disp.InitDisplay(3, new MatrixDisplay24x16(spiConfigDisplay));
         }
 
         private static readonly Random _rand = new Random();
@@ -152,7 +187,7 @@ namespace LedMatrix
 
             bool textDir = false;
             bool textRight = false;
-            for (int i = 0; i < DEMOTIME / 4; i++)
+            for (int i = 0; i < DEMOTIME * 4; i++)
             {
                 if (y <= radius) textDir = true;
                 else if (y >= (Y_MAX - radius)) textDir = false;
@@ -208,64 +243,26 @@ namespace LedMatrix
             }
         }
 
-        static void Demo_Life()
+
+        private static void Demo_Fill()
         {
-            disp.Clear();
-
-            toolbox.SetPixel(10, 3, 1);  // Plant an "acorn"; a simple pattern that
-            toolbox.SetPixel(12, 4, 1); //  grows for quite a while..
-            toolbox.SetPixel(9, 5, 1);
-            toolbox.SetPixel(10, 5, 1);
-            toolbox.SetPixel(13, 5, 1);
-            toolbox.SetPixel(14, 5, 1);
-            toolbox.SetPixel(15, 5, 1);
-
-            //delay( LONGDELAY );   // Play life
-            disp.CopyBuffer(); // Copy the back buffer into the shadow buffer (basically create a backup of the CURRENT display)
-
-            for (int i = 0; i < (DEMOTIME) / 4; i++)
+            for (byte y = 0; y < disp.DisplayHeight; y++)
             {
-                for (int x = 1; x < X_MAX; x++)
+                for (byte x = 0; x < disp.TotalWidth; x++)
                 {
-                    for (int y = 1; y < Y_MAX; y++)
-                    {
-                        int neighbors = toolbox.GetPixel(x, y + 1, true) +
-                                        toolbox.GetPixel(x, y - 1, true) +
-                                        toolbox.GetPixel(x + 1, y, true) +
-                                        toolbox.GetPixel(x + 1, y + 1, true) +
-                                        toolbox.GetPixel(x + 1, y - 1, true) +
-                                        toolbox.GetPixel(x - 1, y, true) +
-                                        toolbox.GetPixel(x - 1, y + 1, true) +
-                                        toolbox.GetPixel(x - 1, y - 1, true);
-
-                        int newval;
-                        switch (neighbors)
-                        {
-                            case 0:
-                            case 1:
-                                newval = 0;   // death by loneliness
-                                break;
-                            case 2:
-                                newval = toolbox.GetPixel(x, y, true); // Fetch pixel from the SHADOW buffer
-                                break;  // remains the same
-                            case 3:
-                                newval = 1;
-                                break;
-                            default:
-                                newval = 0;  // death by overcrowding
-                                break;
-                        }
-
-                        toolbox.SetPixel(x, y, newval);
-                    }
+                    disp.SetPixel(x, y, 1, false);
+                    disp.SyncDisplays();
                 }
-                // Write out display
-                disp.SyncDisplays();
+            }
 
-                // Copy buffer
-                disp.CopyBuffer(); // Copy the back buffer into the shadow buffer (basically create a backup of the CURRENT display)
+            for (byte x = 0; x < disp.TotalWidth; x++)
+            {
+                for (byte y = 0; y < disp.DisplayHeight; y++)
+                {
+                    disp.SetPixel(x, y, 0, false);
+                    disp.SyncDisplays();
 
-                //delay( DISPDELAY );
+                }
             }
         }
 
@@ -274,17 +271,18 @@ namespace LedMatrix
         {
             Setup();
 
-            disp.SetPixel(0, 0, 0, 1, true);
-
             while (true)
             {
- /*               Demo_Text();
+                Demo_Text();
                 Thread.Sleep(1000);
+                
                 Demo_BouncyCircle();
                 Thread.Sleep(1000);
+
                 Demo_Bouncyline();
                 Thread.Sleep(1000);
-                Demo_Life();
+/*
+                Demo_Fill();
                 Thread.Sleep(1000);*/
             }
         }

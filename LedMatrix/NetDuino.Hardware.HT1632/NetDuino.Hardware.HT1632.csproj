@@ -34,7 +34,8 @@
     <Compile Include="MatrixDisplay24x16.cs" />
     <Compile Include="DisplayToolbox.cs" />
     <Compile Include="HT1632_Commands.cs" />
-    <Compile Include="MatrixDisplay32x8.cs" />
+    <None Include="MatrixDisplay32x8.cs" />
+    <Compile Include="MultiDisplay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

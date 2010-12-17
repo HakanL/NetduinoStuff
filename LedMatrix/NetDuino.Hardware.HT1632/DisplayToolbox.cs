@@ -23,10 +23,10 @@ namespace NetDuino.Hardware.HT1632
 
     public class DisplayToolbox
     {
-        private readonly IMatrixDisplay _display;
+        private readonly MultiDisplay _display;
         public const int CHAR_WIDTH = 6;
 
-        public DisplayToolbox(IMatrixDisplay display)
+        public DisplayToolbox(MultiDisplay display)
         {
             _display = display;
         }
@@ -153,26 +153,10 @@ namespace NetDuino.Hardware.HT1632
             // Y Cordinate
             // Value (either on or off, 1, 0)
             // Do you want to write this change straight to the _display? (yes: slower)
-            if (x < 0 || y < 0)
+            if (x < 0 || y < 0 || x >= _display.TotalWidth || y >= _display.DisplayHeight)
                 return;
-            byte displayNum = CalcDisplayNum(ref x);
-            if (displayNum < _display.DisplayCount)
-            {
-                _display.SetPixel(displayNum, (byte)x, (byte)y, (byte)val, paint);
-            }
-        }
 
-        public byte GetPixel(int x,
-                              int y,
-                              bool fromShadow)
-        {
-            return _display.GetPixel(CalcDisplayNum(ref x), (byte)x, (byte)y, fromShadow);
-        }
-
-        public void SetBrightness(byte pwmValue)
-        {
-            for (byte displayNum = 0; displayNum < _display.DisplayCount; ++displayNum)
-                _display.SetBrightness(displayNum, pwmValue);
+            _display.SetPixel((byte)x, (byte)y, (byte)val, paint);
         }
 
         public void DrawRectangle(int x,
@@ -429,7 +413,8 @@ namespace NetDuino.Hardware.HT1632
                 byte dots = _myfont[index][col];
                 for (byte row = 0; row < 7; row++)
                 {
-                    SetPixel(x + col, y + row, (dots & (64 >> row)) != 0 ? 1 : 0);
+                    if((dots & (64 >> row)) != 0)
+                        SetPixel(x + col, y + row, 1);
                 }
             }
         }
