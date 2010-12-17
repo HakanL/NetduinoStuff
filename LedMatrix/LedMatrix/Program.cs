@@ -289,6 +289,8 @@ namespace LedMatrix
         {
             Setup();
 
+            toolbox.DrawString(0, 8, "Static text...");
+
             int topX = 90;
             while (true)
             {
